@@ -35,7 +35,7 @@ with open('urls.txt', 'r') as in_file, open('combined_file.csv', 'w') as outcsv,
             log_file.write('Done ' +'\n\n')
         except Exception, e:
             print e
-            log_file.write(str(e)+'\n\n')
+            log_file.write('ERROR - ' str(e)+'\n\n')
         
         writer = csv.writer(outcsv)
         writer.writerow(result)

@@ -2,6 +2,9 @@
 from bs4 import BeautifulSoup
 import requests
 import json
+import random
+
+START_URL = 'http://finder.startupnationcentral.org/startups'
 
 
 class Parser:
@@ -217,6 +220,49 @@ class Parser:
             similar.append('finder.startupnationcentral.org/c/' + i['url'])
         return (similar[0].encode('utf-8'),similar[1].encode('utf-8'),similar[2].encode('utf-8'))
 
+
+def get_all_page():
+    # data = requests.get(START_URL)
+    allData = []
+    coutn = 0
+    UAS = ("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1",
+           "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0",
+           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10; rv:33.0) Gecko/20100101 Firefox/33.0",
+           "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
+           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36",
+           "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36",
+           )
+    for v in xrange(1,1000):
+
+        ua = UAS[random.randrange(len(UAS))]
+        headers = {'User-Agent': ua}
+        url = 'http://finder.startupnationcentral.org/api/startups?all=&tags_op=and&sector=&employees=&product_stage=&business_model=&funding_stage=&last_updated=&format=json&advanced=true&page={}'.format(v)
+        # url = 'http://track.hubspot.com/__ptq.gif?id=search&all=&tags_op=&sector=&employees=&product_stage=&business_model=&funding_stage=&last_updated=&format=json&advanced=true&page={}&path=startups&k=3&n=search&m=&sd=1366x768&cd=24-bit&cs=UTF-8&ln=en-us&bfp=4143132446&v=1.1&a=748412&t=Start-Up+Nation+Finder&cts=1476049617854&vi=8ede08d639484a197ce1f45c6f8b81c6&nc=false&u=10927595.8ede08d639484a197ce1f45c6f8b81c6.1475850245091.1476040906686.1476049601285.6&b=10927595.1.1476049601285'.format(v)
+        response = requests.get(url, timeout=1000, headers=headers)
+        # print type(response.status_code)
+        if response.status_code == 200:
+            # print response.content
+            data = json.loads(response.content)
+            # coutn += len(data['startups'])
+            # print coutn
+
+            for i in data['startups'][0].keys():
+                print i
+            # with open('urls_test.txt', 'w') as urls_test:
+                 # urls_test.write('======================\n\n\n')
+                 # urls_test.write(response.content)
+        break
+        
+
+def test():
+    with open('all_comp.html', 'r') as all_comp:
+        html = all_comp.read()
+    soup = BeautifulSoup(html, 'html.parser')
+    comp = soup.find_all('div', class_='company-card company-card--grid')
+    print len(comp)
+
 if __name__ == '__main__':
-    parser = Parser('finder.startupnationcentral.org/c/syneron-medical')
-    print(parser.get_tim_member_1())
+    # parser = Parser('finder.startupnationcentral.org/c/syneron-medical')
+    # print(parser.get_tim_member_1())
+    get_all_page()
+    # test()
